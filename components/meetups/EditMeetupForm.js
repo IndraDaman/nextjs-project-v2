@@ -69,8 +69,9 @@ function EditMeetupForm(props) {
             id="description"
             required
             rows="5"
+            defaultValue={props.description}
             onChange={(event) => setDescription(event.target.value)}
-          >{props.description}</textarea>
+          />
         </div>
         <div className={classes.actions}>
           <button>Edit Meetup</button>
