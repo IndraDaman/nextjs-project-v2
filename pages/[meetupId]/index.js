@@ -1,9 +1,9 @@
-import { MongoClient,ObjectId } from "mongodb";
+//import { MongoClient,ObjectId } from "mongodb";
 import Layout from "../../components/layout/Layout";
 import  MeetupDetail  from "../../components/meetups/MeetupDetail";
 
 function MeetupDetails(props) {
-    console.log(props);
+    
   return (
     <Layout>
       <MeetupDetail
@@ -16,17 +16,24 @@ function MeetupDetails(props) {
   );
 }
 export async function getStaticPaths(){
-    const client = await MongoClient.connect(
-        "mongodb+srv://Indradaman:wAVBNbvn17L0CQNe@cluster0.ygmucxm.mongodb.net/nextjsprojectv2?retryWrites=true&w=majority"
-      );
-      const db = client.db();
+    // const client = await MongoClient.connect(
+    //     "mongodb+srv://Indradaman:wAVBNbvn17L0CQNe@cluster0.ygmucxm.mongodb.net/nextjsprojectv2?retryWrites=true&w=majority"
+    //   );
+    //   const db = client.db();
     
-      const meetupCollection = db.collection("meetups");
-      const meetups=await meetupCollection.find({},{_id:1}).toArray();
-      client.close();
+    //   const meetupCollection = db.collection("meetups");
+    //   const meetups=await meetupCollection.find({},{_id:1}).toArray();
+    //   client.close();
+    const response=await fetch('http://localhost:3000/api/meetup-fb/meetupId-all',{
+      method:"GET",
+      headers:{
+          "Content-Type": "application/json"
+      }
+    }).then(response => { return response.json()})
+    .catch(error => console.log('error', error));
     return{
         fallback:true,
-        paths:meetups.map(meetup=>({params:{meetupId:meetup._id.toString()}}))
+        paths:response.data.map(meetup=>({params:{meetupId:meetup}}))
         
     }
 }
@@ -34,23 +41,31 @@ export async function getStaticProps(context){
    
     const meetupId=context.params.meetupId;
     
-    //fetch data from api
-    const client = await MongoClient.connect(
-        "mongodb+srv://Indradaman:wAVBNbvn17L0CQNe@cluster0.ygmucxm.mongodb.net/nextjsprojectv2?retryWrites=true&w=majority"
-      );
-      const db = client.db();
+    //fetch data from mongo
+    // const client = await MongoClient.connect(
+    //     "mongodb+srv://Indradaman:wAVBNbvn17L0CQNe@cluster0.ygmucxm.mongodb.net/nextjsprojectv2?retryWrites=true&w=majority"
+    //   );
+    //   const db = client.db();
 
-      const meetupCollection = db.collection("meetups");
-      const selectedMeetup = await meetupCollection.findOne({_id: ObjectId(meetupId)});
-      client.close();
+    //   const meetupCollection = db.collection("meetups");
+    //   const selectedMeetup = await meetupCollection.findOne({_id: ObjectId(meetupId)});
+    //   client.close();
+    const response=await fetch('http://localhost:3000/api/meetup-fb/'+meetupId,{
+    method:"GET",
+    headers:{
+        "Content-Type": "application/json"
+    }
+  }).then(response => { return response.json()});
+ 
+  const userData= {...response.data};
     return {
         props:{
             meetupData:{
-                id:selectedMeetup._id.toString(),
-                title:selectedMeetup.title,
-                image:selectedMeetup.image,
-                address:selectedMeetup.address,
-                description:selectedMeetup.description,
+                id:userData[0].id,
+                title:userData[0].title,
+                image:userData[0].image,
+                address:userData[0].address,
+                description:userData[0].description,
             }
         },
         

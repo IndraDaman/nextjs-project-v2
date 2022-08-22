@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+//import { MongoClient } from "mongodb";
 import { useEffect, useState } from "react";
 import Layout from "../components/layout/Layout";
 import MeetupList from "../components/meetups/MeetupList";
@@ -23,6 +23,7 @@ const DUMMY_MEETUPS = [
 ];
 
 function HomePage(props) {
+ 
   // const [loaderMeetups,setLoaderMeetups] = useState();
   // useEffect(()=>{
   //     setLoaderMeetups(DUMMY_MEETUPS);
@@ -45,23 +46,31 @@ function HomePage(props) {
 // }
 
 export async function getStaticProps() {
-  //fetch data from api
-  const client = await MongoClient.connect(
-    "mongodb+srv://Indradaman:wAVBNbvn17L0CQNe@cluster0.ygmucxm.mongodb.net/nextjsprojectv2?retryWrites=true&w=majority"
-  );
-  const db = client.db();
+  //fetch data from mongo
+  // const client = await MongoClient.connect(
+  //   "mongodb+srv://Indradaman:wAVBNbvn17L0CQNe@cluster0.ygmucxm.mongodb.net/nextjsprojectv2?retryWrites=true&w=majority"
+  // );
+  // const db = client.db();
 
-  const meetupCollection = db.collection("meetups");
-  const meetups=await meetupCollection.find().toArray();
-  client.close();
+  // const meetupCollection = db.collection("meetups");
+  // const meetups=await meetupCollection.find().toArray();
+  // client.close();
+  const response=await fetch('http://localhost:3000/api/meetup-fb/meetup-all',{
+    method:"GET",
+    headers:{
+        "Content-Type": "application/json"
+    }
+  }).then(response => { return response.json()})
+  .catch(error => console.log('error', error));
+
   return {
     props: {
-      meetups: meetups.map(meetup=>({
+      meetups: response.data.map((meetup,i)=>({
         title:meetup.title,
         image:meetup.image,
         address:meetup.address,
         description:meetup.description,
-        id:meetup._id.toString(),
+        id:meetup.id.toString(),
       })),
     },
     revalidate: 1,

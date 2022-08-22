@@ -7,7 +7,7 @@ function NewMeetupPage() {
  async function addMeetupHandler(enterMeetupData) {
     //console.log(enterMeetupData);
     
-    const response=await fetch('/api/new-meetup',{
+    const response=await fetch('/api/meetup-fb/meetup-add',{
       method:"POST",
       body:JSON.stringify(enterMeetupData),
       headers:{
